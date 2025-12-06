@@ -8,3 +8,54 @@ trinity-hooks/
 viewer/
 CLAUDE.md
 TRINITY.md
+
+# ============================================
+# SPOTIFY RAINMETER SKIN - CRITICAL SECURITY
+# ============================================
+
+# @Vault folder (contains OAuth tokens - NEVER COMMIT)
+@Vault/
+**/SpotifyCredentials.inc
+
+# Python build artifacts (SpotifySetup.exe build)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Rainmeter cache
+*.bak
+*.log
+
+# Album art cache (downloaded images)
+**/Cache/*.jpg
+**/Cache/*.png
+!**/Cache/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
