@@ -43,7 +43,7 @@ function Initialize()
     local clientSecret = SKIN:GetVariable('SpotifyClientSecret', '')
 
     if clientID == '' or clientSecret == '' then
-        SKIN:Bang('!Log', 'Base64Encoder: Missing client credentials!', 'Error')
+        SKIN:Bang('[!Log "Base64Encoder: Missing client credentials!" Warning]')
         return ''
     end
 
@@ -53,7 +53,7 @@ function Initialize()
     -- Encode to Base64
     local encoded = base64_encode(credentials)
 
-    SKIN:Bang('!Log', 'Base64Encoder: Credentials encoded successfully', 'Debug')
+    SKIN:Bang('[!Log "Base64Encoder: Credentials encoded successfully" Debug]')
 
     return encoded
 end

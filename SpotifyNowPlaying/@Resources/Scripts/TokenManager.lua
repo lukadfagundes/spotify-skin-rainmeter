@@ -48,14 +48,14 @@ HELPER FUNCTIONS
 ]]--
 
 --- Log message to Rainmeter log
--- @param level string - Log level (Info, Warning, Error, Debug)
+-- @param level string - Log level (Notice, Warning, Error, Debug)
 -- @param message string - Message to log
 function Log(level, message)
     if level == "Debug" and not LOG_DEBUG then
         return
     end
 
-    SKIN:Bang('!Log', string.format("[TokenManager] %s", message), level)
+    SKIN:Bang(string.format('[!Log "[TokenManager] %s" %s]', message, level))
 end
 
 --- Get current Unix timestamp
@@ -126,7 +126,7 @@ CORE FUNCTIONS (Called by Rainmeter)
 --- Initialize function - Called when skin loads
 -- Loads token expiry from @Vault and determines Vault path
 function Initialize()
-    Log("Info", "TokenManager initializing...")
+    Log("Notice", "TokenManager initializing...")
 
     -- Get @Vault path from Rainmeter variables
     local rainmeterPath = SKIN:GetVariable("SETTINGSPATH")
@@ -147,13 +147,13 @@ function Initialize()
     if timeRemaining <= 0 then
         Log("Warning", "Token is already expired! Manual setup required via SpotifySetup.exe")
     elseif timeRemaining < REFRESH_THRESHOLD then
-        Log("Info", string.format("Token expires in %d seconds - will refresh immediately", timeRemaining))
+        Log("Notice", string.format("Token expires in %d seconds - will refresh immediately", timeRemaining))
     else
-        Log("Info", string.format("Token valid for %d seconds (%d minutes)", timeRemaining, math.floor(timeRemaining / 60)))
+        Log("Notice", string.format("Token valid for %d seconds (%d minutes)", timeRemaining, math.floor(timeRemaining / 60)))
     end
 
     lastCheckTime = currentTime
-    Log("Info", "TokenManager initialized successfully")
+    Log("Notice", "TokenManager initialized successfully")
 end
 
 --- Update function - Called periodically (every 60 seconds)
@@ -174,7 +174,7 @@ function Update()
         if timeRemaining <= 0 then
             Log("Warning", "Token expired! Attempting refresh...")
         else
-            Log("Info", string.format("Token expires in %d seconds - triggering refresh", timeRemaining))
+            Log("Notice", string.format("Token expires in %d seconds - triggering refresh", timeRemaining))
         end
 
         RefreshToken()
@@ -194,7 +194,7 @@ function RefreshToken()
     end
 
     isRefreshing = true
-    Log("Info", "Initiating token refresh...")
+    Log("Notice", "Initiating token refresh...")
 
     -- Trigger the WebParser measure that handles OAuth refresh
     SKIN:Bang('!CommandMeasure', 'MeasureTokenRefresh', 'Update')
@@ -210,7 +210,7 @@ CALLBACK FUNCTIONS (Called by WebParser measures)
 -- Parses JSON response and updates @Vault file
 -- @param jsonResponse string - JSON response from Spotify token endpoint
 function OnTokenRefreshFinish()
-    Log("Info", "Token refresh response received")
+    Log("Notice", "Token refresh response received")
 
     -- Get token values from child WebParser measures
     local accessToken = SKIN:GetVariable("SpotifyAccessToken")
@@ -228,7 +228,7 @@ function OnTokenRefreshFinish()
     local currentTime = GetCurrentTime()
     local newExpiry = currentTime + expiresIn
 
-    Log("Info", string.format("New token received (expires in %d seconds)", expiresIn))
+    Log("Notice", string.format("New token received (expires in %d seconds)", expiresIn))
 
     -- Update @Vault file with new tokens
     local success = true
@@ -247,7 +247,7 @@ function OnTokenRefreshFinish()
 
     if success then
         tokenExpiry = newExpiry
-        Log("Info", "Token refresh complete - credentials saved to @Vault")
+        Log("Notice", "Token refresh complete - credentials saved to @Vault")
 
         -- Trigger skin refresh to reload variables from @Vault
         SKIN:Bang('!Refresh')
@@ -296,7 +296,7 @@ end
 
 --- Force immediate token refresh (for manual triggering)
 function ForceRefresh()
-    Log("Info", "Manual token refresh requested")
+    Log("Notice", "Manual token refresh requested")
     isRefreshing = false  -- Reset state in case stuck
     RefreshToken()
 end
