@@ -51,8 +51,8 @@ source venv/Scripts/activate  # Windows Git Bash
 # OR: .\venv\Scripts\Activate.ps1  # PowerShell
 # OR: venv\Scripts\activate.bat    # CMD
 
-# Install dependencies (Pillow for icon display in GUI)
-pip install requests Pillow pyinstaller
+# Install dependencies from requirements.txt
+pip install -r requirements.txt
 
 # Build executable
 pyinstaller --onefile --windowed --name SpotifySetup --icon=icon.ico SpotifySetup.py
@@ -448,7 +448,7 @@ echo "Building $SKIN_NAME v$VERSION..."
 
 # Step 1: Build executable
 echo "Compiling SpotifySetup.exe..."
-pip install -q requests pyinstaller
+pip install -q -r requirements.txt
 pyinstaller --onefile --windowed --name SpotifySetup --clean SpotifySetup.py
 cp dist/SpotifySetup.exe $SKIN_NAME/
 

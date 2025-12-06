@@ -460,6 +460,10 @@ SpotifyTokenExpiry={expiry_time}
                 "run this setup again (unless you revoke the app in Spotify settings)."
             )
 
+            # Close the application after user clicks OK
+            self.root.quit()
+            self.root.destroy()
+
         except Exception as e:
             messagebox.showerror("Write Error", f"Failed to write credentials:\n{str(e)}")
             self.log(f"✗ Failed to write credentials: {str(e)}")

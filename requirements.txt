@@ -1,0 +1,11 @@
+# Python dependencies for SpotifySetup.py OAuth utility
+# Install with: pip install -r requirements.txt
+
+# HTTP requests for Spotify API
+requests>=2.31.0
+
+# Image processing for icon display in tkinter GUI
+Pillow>=10.0.0
+
+# Build SpotifySetup.exe executable
+pyinstaller>=6.0.0

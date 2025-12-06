@@ -12,12 +12,12 @@
 ;------------------------------------------------------------------------------
 
 SkinWidth=400
-SkinHeight=250
+SkinHeight=400
 SkinCornerRadius=8
 
-AlbumArtSize=150
-AlbumArtX=10
-AlbumArtY=10
+AlbumArtSize=200
+AlbumArtX=100
+AlbumArtY=20
 
 ;------------------------------------------------------------------------------
 ; Colors (RGBA format)
@@ -56,27 +56,27 @@ FontWeightNormal=400
 ; Layout Positions
 ;------------------------------------------------------------------------------
 
-TrackNameX=170
-TrackNameY=20
-TrackNameW=220
+TrackNameX=20
+TrackNameY=235
+TrackNameW=360
 TrackNameH=30
 
-ArtistNameX=170
-ArtistNameY=55
-ArtistNameW=220
+ArtistNameX=20
+ArtistNameY=265
+ArtistNameW=360
 ArtistNameH=25
 
-AlbumNameX=170
-AlbumNameY=80
-AlbumNameW=220
+AlbumNameX=20
+AlbumNameY=290
+AlbumNameW=360
 AlbumNameH=25
 
-ProgressBarX=170
-ProgressBarY=120
-ProgressBarW=220
+ProgressBarX=20
+ProgressBarY=325
+ProgressBarW=360
 ProgressBarH=6
 
-ControlButtonsY=170
+ControlButtonsY=345
 ControlButtonSize=32
 ControlButtonSpacing=10
 

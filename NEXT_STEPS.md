@@ -11,6 +11,7 @@
 If you've already built once and need to rebuild:
 
 ```bash
+# Navigate to root directory
 cd "c:\Users\lukaf\Desktop\Dev Work\spotify-skin-rainmeter"
 
 # Remove old build files
@@ -44,8 +45,8 @@ source venv/Scripts/activate
 # On Windows (CMD):
 # venv\Scripts\activate.bat
 
-# Install dependencies (Pillow for icon display)
-pip install requests Pillow pyinstaller
+# Install dependencies from requirements.txt
+pip install -r requirements.txt
 
 # Build executable
 pyinstaller --onefile --windowed --name SpotifySetup SpotifySetup.py
@@ -63,24 +64,6 @@ deactivate
 - ✅ Icon displays in header (using default-album.png)
 - ✅ Detailed instructions include API/SDK selection
 - ✅ All fields pre-specified for you
-
----
-
-### 2️⃣ ~~Image Files~~ ✅ **COMPLETE**
-
-**Status**: PNG files are already in place!
-
-```
-SpotifyNowPlaying/@Resources/Images/
-├── play.png (9.6 KB) ✅
-├── pause.png (10.4 KB) ✅
-├── next.png (9.8 KB) ✅
-├── previous.png (13.7 KB) ✅
-└── default-album.png (13.6 KB) ✅
-```
-
-**SpotifyNowPlaying.ini**: Already configured for PNGs ✅
-**Package**: PNGs will be included in .rmskin automatically ✅
 
 ---
 
@@ -165,7 +148,7 @@ Before publishing v1.0.0:
 
 **Build executable**:
 ```bash
-pip install requests Pillow pyinstaller
+pip install -r requirements.txt
 pyinstaller --onefile --windowed --name SpotifySetup SpotifySetup.py
 ```
 
