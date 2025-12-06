@@ -70,7 +70,10 @@ class CallbackHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             response = """
             <html>
-            <head><title>Authorization Successful</title></head>
+            <head>
+                <meta charset="UTF-8">
+                <title>Authorization Successful</title>
+            </head>
             <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #1DB954;">
                 <h1 style="color: white;">✓ Authorization Successful!</h1>
                 <p style="color: white; font-size: 18px;">You can close this window and return to the setup utility.</p>

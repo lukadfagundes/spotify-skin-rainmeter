@@ -19,6 +19,9 @@ rm -rf build/ dist/ SpotifySetup.spec
 # Remove old executable from skin folder
 rm SpotifyNowPlaying/SpotifySetup.exe
 
+# Remove old Rainmeter installation (for completely fresh test)
+rm -rf "$HOME/Documents/Rainmeter/Skins/SpotifyNowPlaying"
+
 # Optional: Remove virtual environment (if starting completely fresh)
 # rm -rf venv/
 ```
@@ -27,7 +30,7 @@ rm SpotifyNowPlaying/SpotifySetup.exe
 
 ### 1️⃣ Build SpotifySetup.exe ⚠️ **REQUIRED**
 
-**Option A: With Virtual Environment (Recommended)**
+**With Virtual Environment**
 
 ```bash
 # Create virtual environment (first time only)
@@ -52,19 +55,6 @@ cp dist/SpotifySetup.exe SpotifyNowPlaying/
 
 # Deactivate when done (optional)
 deactivate
-```
-
-**Option B: System-Wide Install (Quick but not isolated)**
-
-```bash
-# Install dependencies globally
-pip install requests Pillow pyinstaller
-
-# Build executable
-pyinstaller --onefile --windowed --name SpotifySetup SpotifySetup.py
-
-# Copy to skin folder
-cp dist/SpotifySetup.exe SpotifyNowPlaying/
 ```
 
 **Verify**: `SpotifyNowPlaying/SpotifySetup.exe` exists (~8-12 MB)

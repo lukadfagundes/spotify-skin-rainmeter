@@ -66,3 +66,8 @@ wheels/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ENVs
+.env
+.env.local
+

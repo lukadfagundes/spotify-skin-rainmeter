@@ -105,7 +105,7 @@ magick convert default-album.svg -resize 200x200 default-album.png
 
 ### Step 3: Create RMSKIN.ini Metadata
 
-Create `SpotifyNowPlaying/RMSKIN.ini` with package metadata:
+Create `RMSKIN.ini` at the **project root** (not inside SpotifyNowPlaying folder) with package metadata:
 
 ```ini
 [rmskin]
@@ -154,13 +154,17 @@ Enabled=1
 Before packaging, ensure correct structure:
 
 ```
-SpotifyNowPlaying/
-├── SpotifyNowPlaying.ini
-├── SpotifySetup.exe
-├── RMSKIN.ini
-├── README.md (optional, recommended)
+spotify-skin-rainmeter/            # Project root
+├── RMSKIN.ini                     # Package metadata (at root!)
+├── SpotifySetup.py
+├── README.md
+├── docs/
 │
-└── @Resources/
+└── SpotifyNowPlaying/             # Skin folder
+    ├── SpotifyNowPlaying.ini
+    ├── SpotifySetup.exe
+    │
+    └── @Resources/
     ├── Variables.inc
     ├── SpotifyCredentials.inc.template
     │
@@ -221,37 +225,37 @@ ls -la @Resources/Scripts/
 
 **Method B: Manual Packaging (Advanced)**
 
-1. Create ZIP archive:
+1. Create ZIP archive from project root:
 ```bash
-cd SpotifyNowPlaying
-7z a -tzip ../SpotifyNowPlaying.zip *
+# From project root directory
+7z a -tzip SpotifyNowPlaying.zip RMSKIN.ini SpotifyNowPlaying/
 ```
 
 2. Rename `.zip` to `.rmskin`:
 ```bash
-mv ../SpotifyNowPlaying.zip ../SpotifyNowPlaying_v1.0.0.rmskin
+mv SpotifyNowPlaying.zip SpotifyNowPlaying_v1.0.0.rmskin
 ```
 
 3. Verify archive contents:
 ```bash
-7z l ../SpotifyNowPlaying_v1.0.0.rmskin
+7z l SpotifyNowPlaying_v1.0.0.rmskin
 ```
 
 **Expected Contents**:
 ```
-SpotifyNowPlaying.ini
-SpotifySetup.exe
-RMSKIN.ini
-@Resources/Variables.inc
-@Resources/SpotifyCredentials.inc.template
-@Resources/Images/play.png
-@Resources/Images/pause.png
-@Resources/Images/next.png
-@Resources/Images/previous.png
-@Resources/Images/default-album.png
-@Resources/Scripts/TokenManager.lua
-@Resources/Scripts/Base64Encoder.lua
-@Resources/Cache/.gitkeep
+RMSKIN.ini                                              # At archive root
+SpotifyNowPlaying/SpotifyNowPlaying.ini
+SpotifyNowPlaying/SpotifySetup.exe
+SpotifyNowPlaying/@Resources/Variables.inc
+SpotifyNowPlaying/@Resources/SpotifyCredentials.inc.template
+SpotifyNowPlaying/@Resources/Images/play.png
+SpotifyNowPlaying/@Resources/Images/pause.png
+SpotifyNowPlaying/@Resources/Images/next.png
+SpotifyNowPlaying/@Resources/Images/previous.png
+SpotifyNowPlaying/@Resources/Images/default-album.png
+SpotifyNowPlaying/@Resources/Scripts/TokenManager.lua
+SpotifyNowPlaying/@Resources/Scripts/Base64Encoder.lua
+SpotifyNowPlaying/@Resources/Cache/.gitkeep
 ```
 
 **CRITICAL: Verify @Vault is NOT included**:
