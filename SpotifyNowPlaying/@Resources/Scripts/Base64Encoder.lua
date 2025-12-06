@@ -55,11 +55,18 @@ function Initialize()
 
     SKIN:Bang('[!Log "Base64Encoder: Credentials encoded successfully" Debug]')
 
+    -- Set the encoded value as a Rainmeter variable for use in WebParser
+    SKIN:Bang('!SetVariable', 'AuthHeaderBase64', encoded)
+    SKIN:Bang(string.format('[!Log "Base64Encoder: Set AuthHeaderBase64 variable (length: %d)" Debug]', string.len(encoded)))
+
     return encoded
 end
 
 --- Update function - Returns the encoded string
 -- This allows the measure to be used dynamically
 function Update()
-    return Initialize()
+    local result = Initialize()
+    -- Also log from Update to confirm it's being called
+    SKIN:Bang('[!Log "Base64Encoder: Update() called" Debug]')
+    return result
 end

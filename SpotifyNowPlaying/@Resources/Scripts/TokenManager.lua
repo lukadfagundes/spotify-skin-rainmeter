@@ -38,7 +38,7 @@ local vaultPath = ""           -- Path to SpotifyCredentials.inc
 local lastCheckTime = 0        -- Timestamp of last expiry check
 
 -- Logging levels
-local LOG_DEBUG = false        -- Set to true for verbose logging
+local LOG_DEBUG = true         -- Set to true for verbose logging
 local LOG_INFO = true          -- Info-level logging
 
 --[[
@@ -195,6 +195,39 @@ function RefreshToken()
 
     isRefreshing = true
     Log("Notice", "Initiating token refresh...")
+
+    -- Force update of MeasureAuthHeader to ensure Base64 value is fresh
+    SKIN:Bang('!UpdateMeasure', 'MeasureAuthHeader')
+
+    -- Debug: Log the auth header value
+    local authHeaderMeasure = SKIN:GetMeasure('MeasureAuthHeader')
+    if authHeaderMeasure then
+        local authValue = authHeaderMeasure:GetStringValue()
+        Log("Debug", string.format("Auth header Base64 value: %s", authValue or "EMPTY"))
+    else
+        Log("Warning", "Could not get MeasureAuthHeader measure!")
+    end
+
+    -- Debug: Log the variable value that will be used in the Header
+    local authVarValue = SKIN:GetVariable('AuthHeaderBase64', '')
+    Log("Debug", string.format("AuthHeaderBase64 variable value: %s", authVarValue or "EMPTY"))
+
+    -- Debug: Log the refresh token (first 20 chars only)
+    local refreshToken = SKIN:GetVariable('SpotifyRefreshToken', '')
+    if refreshToken and refreshToken ~= '' then
+        Log("Debug", string.format("Refresh token: %s... (length: %d)", string.sub(refreshToken, 1, 20), string.len(refreshToken)))
+    else
+        Log("Warning", "Refresh token is EMPTY!")
+    end
+
+    -- Set the Authorization header directly using !SetOption before triggering refresh
+    if authVarValue and authVarValue ~= '' then
+        local fullAuthHeader = 'Authorization: Basic ' .. authVarValue
+        SKIN:Bang('!SetOption', 'MeasureTokenRefresh', 'Header', fullAuthHeader)
+        Log("Debug", string.format("Set Authorization header dynamically (length: %d)", string.len(fullAuthHeader)))
+    else
+        Log("Error", "Cannot set Authorization header - Base64 value is empty!")
+    end
 
     -- Trigger the WebParser measure that handles OAuth refresh
     SKIN:Bang('!CommandMeasure', 'MeasureTokenRefresh', 'Update')
