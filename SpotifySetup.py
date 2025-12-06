@@ -16,10 +16,10 @@ Flow:
 
 Requirements:
 - Python 3.7+
-- Libraries: tkinter (built-in), requests, webbrowser (built-in)
+- Libraries: tkinter (built-in), requests, Pillow (for icon), webbrowser (built-in)
 
 Build:
-    pip install requests pyinstaller
+    pip install requests Pillow pyinstaller
     pyinstaller --onefile --windowed --name SpotifySetup SpotifySetup.py
 
 Author: Spotify Rainmeter Skin Project
@@ -111,12 +111,26 @@ class SpotifySetupApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Spotify Rainmeter Skin - OAuth Setup")
-        self.root.geometry("600x700")
+        self.root.geometry("650x750")
         self.root.resizable(False, False)
 
         # Variables
         self.client_id_var = tk.StringVar()
         self.client_secret_var = tk.StringVar()
+
+        # Try to load icon
+        self.icon_photo = None
+        try:
+            # Look for icon in @Resources/Images/ relative to script location
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            icon_path = os.path.join(script_dir, "SpotifyNowPlaying", "@Resources", "Images", "default-album.png")
+            if os.path.exists(icon_path):
+                from PIL import Image, ImageTk
+                icon_img = Image.open(icon_path).resize((40, 40), Image.LANCZOS)
+                self.icon_photo = ImageTk.PhotoImage(icon_img)
+        except Exception as e:
+            # Icon loading is optional, continue without it
+            pass
 
         # Build UI
         self.create_widgets()
@@ -129,14 +143,24 @@ class SpotifySetupApp:
         header_frame.pack(fill=tk.X)
         header_frame.pack_propagate(False)
 
+        # Icon and title container
+        title_container = tk.Frame(header_frame, bg="#1DB954")
+        title_container.pack(expand=True)
+
+        # Icon (if loaded)
+        if self.icon_photo:
+            icon_label = tk.Label(title_container, image=self.icon_photo, bg="#1DB954")
+            icon_label.pack(side=tk.LEFT, padx=(0, 10))
+
+        # Title
         title_label = tk.Label(
-            header_frame,
-            text="🎵 Spotify Rainmeter Skin Setup",
+            title_container,
+            text="Spotify Rainmeter Skin Setup" if self.icon_photo else "🎵 Spotify Rainmeter Skin Setup",
             font=("Arial", 18, "bold"),
             bg="#1DB954",
             fg="white"
         )
-        title_label.pack(pady=25)
+        title_label.pack(side=tk.LEFT)
 
         # Main content
         content_frame = tk.Frame(self.root, padx=20, pady=20)
@@ -153,14 +177,19 @@ class SpotifySetupApp:
 
         instructions_text = tk.Label(
             content_frame,
-            text="1. Go to https://developer.spotify.com/dashboard\n"
+            text="1. Click 'Open Spotify Developer Dashboard' below\n"
                  "2. Click 'Create App'\n"
-                 f"3. Set Redirect URI to: {REDIRECT_URI}\n"
-                 "4. Copy your Client ID and Client Secret below",
+                 "3. Fill in:\n"
+                 "   • App Name: Rainmeter Spotify (or any name)\n"
+                 "   • App Description: Personal Rainmeter skin\n"
+                 f"   • Redirect URI: {REDIRECT_URI}\n"
+                 "   • Which API/SDKs: Check 'Web API' only\n"
+                 "4. Check agreement box → Click 'Save'\n"
+                 "5. Click 'Settings' → Copy Client ID and Client Secret below",
             font=("Arial", 9),
             justify=tk.LEFT,
             anchor="w",
-            fg="#666"
+            fg="#333"
         )
         instructions_text.pack(fill=tk.X, pady=(0, 15))
 

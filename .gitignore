@@ -17,6 +17,12 @@ TRINITY.md
 @Vault/
 **/SpotifyCredentials.inc
 
+# Python virtual environment
+venv/
+env/
+ENV/
+.venv/
+
 # Python build artifacts (SpotifySetup.exe build)
 __pycache__/
 *.py[cod]
@@ -38,6 +44,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*.spec
 
 # Rainmeter cache
 *.bak

@@ -45,11 +45,20 @@ Before packaging, compile the Python script into a standalone executable:
 ```bash
 cd spotify-skin-rainmeter
 
-# Install dependencies
-pip install requests pyinstaller
+# Create and activate virtual environment (recommended)
+python -m venv venv
+source venv/Scripts/activate  # Windows Git Bash
+# OR: .\venv\Scripts\Activate.ps1  # PowerShell
+# OR: venv\Scripts\activate.bat    # CMD
+
+# Install dependencies (Pillow for icon display in GUI)
+pip install requests Pillow pyinstaller
 
 # Build executable
 pyinstaller --onefile --windowed --name SpotifySetup --icon=icon.ico SpotifySetup.py
+
+# Deactivate venv
+deactivate
 ```
 
 **Output**: `dist/SpotifySetup.exe`

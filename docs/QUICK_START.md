@@ -42,9 +42,11 @@
      - **App Name**: `Rainmeter Spotify` (or any name)
      - **App Description**: `Personal Rainmeter skin`
      - **Redirect URI**: `http://127.0.0.1:8888/callback` ⚠️ **EXACT MATCH**
+     - **Which API/SDKs**: Check **"Web API"** only
+   - Check agreement box
    - Click **Save**
 
-4. Copy your **Client ID** and **Client Secret** from Spotify dashboard
+4. Click **Settings** → Copy your **Client ID** and **Client Secret**
 
 5. Paste them into SpotifySetup.exe
 

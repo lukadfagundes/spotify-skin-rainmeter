@@ -75,9 +75,12 @@ A beautiful, lightweight Rainmeter skin that displays your currently playing Spo
    - Run `SpotifySetup.exe`
    - Follow the on-screen instructions:
      - Click "Open Spotify Developer Dashboard"
-     - Create a new app (or use existing)
-     - Set Redirect URI to: `http://127.0.0.1:8888/callback`
-     - Copy Client ID and Client Secret into the utility
+     - Create a new app:
+       - App Name: Any name (e.g., "Rainmeter Spotify")
+       - Redirect URI: `http://127.0.0.1:8888/callback` (EXACT)
+       - Which API/SDKs: Check "Web API" only
+     - Click Settings → Copy Client ID and Client Secret
+     - Paste into SpotifySetup.exe
      - Click "Authorize with Spotify"
      - Complete authorization in your browser
 
