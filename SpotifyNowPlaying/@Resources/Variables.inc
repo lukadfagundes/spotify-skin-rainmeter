@@ -102,7 +102,7 @@ CacheDir=#@#Cache\
 
 ; Set to 1 to show debug information (token status, API errors)
 ; Set to 0 to hide debug info for production
-DebugMode=1
+DebugMode=0
 
 ;------------------------------------------------------------------------------
 ; Dynamic Variables (Set by Lua scripts at runtime)
