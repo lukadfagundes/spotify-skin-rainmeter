@@ -129,11 +129,10 @@ function Initialize()
     Log("Notice", "TokenManager initializing...")
 
     -- Get @Vault path from Rainmeter variables
-    local rainmeterPath = SKIN:GetVariable("SETTINGSPATH")
-    local skinPath = SKIN:GetVariable("CURRENTPATH")
+    local skinsPath = SKIN:GetVariable("SKINSPATH")
 
-    -- @Vault is at SETTINGSPATH\Skins\@Vault\
-    vaultPath = rainmeterPath .. "Skins\\@Vault\\SpotifyCredentials.inc"
+    -- @Vault is at SKINSPATH\@Vault\
+    vaultPath = skinsPath .. "@Vault\\SpotifyCredentials.inc"
 
     Log("Debug", string.format("Vault path: %s", vaultPath))
 
