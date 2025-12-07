@@ -103,3 +103,17 @@ CacheDir=#@#Cache\
 ; Set to 1 to show debug information (token status, API errors)
 ; Set to 0 to hide debug info for production
 DebugMode=1
+
+;------------------------------------------------------------------------------
+; Dynamic Variables (Set by Lua scripts at runtime)
+;------------------------------------------------------------------------------
+
+; Track information (updated by NowPlayingParser.lua)
+TrackName=Loading...
+ArtistName=
+AlbumName=
+AlbumArtURL=
+
+; Playback progress (updated by NowPlayingParser.lua)
+ProgressMs=0
+DurationMs=1
