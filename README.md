@@ -305,6 +305,27 @@ UpdateRateTokenCheck=60 ; Default: 60 seconds
 
 ---
 
+#### International Characters Display as Question Marks
+
+**Limitation:**
+- Track, artist, and album names with international characters (Japanese, Korean, Cyrillic, etc.) display as `?` characters
+- Example: "インフェルノ" displays as "????????"
+
+**Cause:**
+- Rainmeter's Lua script engine uses ANSI/Windows-1252 encoding internally
+- Lua variables don't support UTF-8 encoding, which is required for international characters
+
+**Status:**
+- This is a known limitation of Rainmeter's Lua implementation
+- Full Unicode support will require updates to the Rainmeter codebase itself
+- See [Roadmap](#roadmap) for "Unicode/UTF-8 Support" as an upcoming feature
+
+**Workaround:**
+- None available at this time while using OAuth 2.0 approach
+- Alternative: Use WebNowPlaying plugin (requires browser extension instead of OAuth)
+
+---
+
 ### Debug Mode
 
 Enable detailed logging in `@Resources\Variables.inc`:
@@ -629,6 +650,7 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 Future enhancements being considered:
 
+- [ ] **Unicode/UTF-8 Support** - Full international character display (requires Rainmeter codebase updates)
 - [ ] Volume control slider
 - [ ] Playlist management (add to playlist)
 - [ ] Like/unlike current track

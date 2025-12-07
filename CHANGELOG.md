@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Upcoming Features (Pending Rainmeter Codebase Advances)
+- **Unicode/UTF-8 Character Support** - Full international character display for track, artist, and album names
+  - Currently limited by Rainmeter's Lua implementation using ANSI/Windows-1252 encoding
+  - International characters (Japanese, Korean, Cyrillic, etc.) display as `?` characters
+  - Requires Rainmeter core updates to support UTF-8 in Lua variables
+  - See [Known Limitations](#known-limitations) below for current behavior
+
 ### Planned Features
 - Volume control slider
 - Playlist management (add to playlist button)
-- Like/unlike current track
+- Like/unlock current track
 - Multiple skin variants (compact, large, mini)
 - Visualizer integration
 - Shuffle/repeat toggle buttons
@@ -95,6 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PyInstaller (for building executable)
 
 ### Known Limitations
+- **Unicode Character Display** - International characters (Japanese, Korean, Cyrillic, etc.) display as `?` due to Rainmeter Lua ANSI encoding limitation
 - Playback controls require Spotify Premium
 - Only works with Spotify catalog streaming (not local files)
 - Requires active internet connection

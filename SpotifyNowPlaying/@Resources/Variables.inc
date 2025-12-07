@@ -44,7 +44,7 @@ ColorSpotifyGreen=29,185,84,255
 ; Fonts
 ;------------------------------------------------------------------------------
 
-FontFace=Segoe UI
+FontFace=Arial
 FontSizeTrack=14
 FontSizeArtist=11
 FontSizeAlbum=10
@@ -102,7 +102,7 @@ CacheDir=#@#Cache\
 
 ; Set to 1 to show debug information (token status, API errors)
 ; Set to 0 to hide debug info for production
-DebugMode=1
+DebugMode=0
 
 ;------------------------------------------------------------------------------
 ; Dynamic Variables (Set by Lua scripts at runtime)
@@ -117,3 +117,8 @@ AlbumArtURL=
 ; Playback progress (updated by NowPlayingParser.lua)
 ProgressMs=0
 DurationMs=1
+IsPlaying=0
+
+; Formatted time strings (updated by NowPlayingParser.lua)
+ProgressTimeFormatted=0:00
+DurationTimeFormatted=0:00
