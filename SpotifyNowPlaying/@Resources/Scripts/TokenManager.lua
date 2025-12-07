@@ -55,7 +55,9 @@ function Log(level, message)
         return
     end
 
-    SKIN:Bang(string.format('[!Log "[TokenManager] %s" %s]', message, level))
+    -- Escape quotes in message to prevent bang parsing errors
+    local escapedMessage = message:gsub('"', '""')
+    SKIN:Bang(string.format('[!Log "[TokenManager] %s" %s]', escapedMessage, level))
 end
 
 --- Get current Unix timestamp
@@ -100,10 +102,15 @@ end
 -- @param newValue string - New value
 -- @return boolean - Success status
 function UpdateVaultVariable(varName, newValue)
+    Log("Debug", string.format("UpdateVaultVariable called: varName=%s, newValue length=%d", varName, string.len(newValue)))
+
     local content = ReadFile(vaultPath)
     if not content then
+        Log("Error", "Failed to read @Vault file")
         return false
     end
+
+    Log("Debug", string.format("Read @Vault file successfully (length: %d bytes)", string.len(content)))
 
     -- Pattern: Match variable assignment (handles = signs with optional spaces)
     local pattern = string.format("(%s%s*=%s*)([^\n\r]*)", varName, "%s", "%s")
@@ -114,7 +121,11 @@ function UpdateVaultVariable(varName, newValue)
         return false
     end
 
-    return WriteFile(vaultPath, updated)
+    Log("Debug", string.format("Variable %s matched and replaced in content", varName))
+
+    local writeResult = WriteFile(vaultPath, updated)
+    Log("Debug", string.format("WriteFile result for %s: %s", varName, tostring(writeResult)))
+    return writeResult
 end
 
 --[[
@@ -134,7 +145,15 @@ function Initialize()
     -- @Vault is at SKINSPATH\@Vault\
     vaultPath = skinsPath .. "@Vault\\SpotifyCredentials.inc"
 
-    Log("Debug", string.format("Vault path: %s", vaultPath))
+    Log("Notice", string.format("Vault path: %s", vaultPath))
+
+    -- Verify vault file exists and is readable
+    local testRead = ReadFile(vaultPath)
+    if testRead then
+        Log("Notice", string.format("Vault file verified (size: %d bytes)", string.len(testRead)))
+    else
+        Log("Error", "Cannot read vault file at initialization!")
+    end
 
     -- Load initial token expiry
     local expiryStr = SKIN:GetVariable("SpotifyTokenExpiry", "0")
@@ -187,6 +206,8 @@ end
 
 --- Trigger token refresh via WebParser measure
 function RefreshToken()
+    Log("Debug", "=== RefreshToken() CALLED ===")
+
     if isRefreshing then
         Log("Debug", "Refresh already in progress, skipping")
         return
@@ -207,7 +228,7 @@ function RefreshToken()
         Log("Warning", "Could not get MeasureAuthHeader measure!")
     end
 
-    -- Debug: Log the variable value that will be used in the Header
+    -- Debug: Log the variable value that will be used in curl header
     local authVarValue = SKIN:GetVariable('AuthHeaderBase64', '')
     Log("Debug", string.format("AuthHeaderBase64 variable value: %s", authVarValue or "EMPTY"))
 
@@ -217,37 +238,32 @@ function RefreshToken()
         Log("Debug", string.format("Refresh token: %s... (length: %d)", string.sub(refreshToken, 1, 20), string.len(refreshToken)))
     else
         Log("Warning", "Refresh token is EMPTY!")
+        isRefreshing = false
+        return
     end
 
-    -- Set the Authorization header directly using !SetOption before triggering refresh
-    if authVarValue and authVarValue ~= '' then
-        local fullAuthHeader = 'Authorization: Basic ' .. authVarValue
-        SKIN:Bang('!SetOption', 'MeasureTokenRefresh', 'Header', fullAuthHeader)
-        Log("Debug", string.format("Set Authorization header dynamically (length: %d)", string.len(fullAuthHeader)))
-    else
-        Log("Error", "Cannot set Authorization header - Base64 value is empty!")
-    end
-
-    -- Trigger the WebParser measure that handles OAuth refresh
-    SKIN:Bang('!CommandMeasure', 'MeasureTokenRefresh', 'Update')
+    -- Trigger the RunCommand curl measure that handles OAuth refresh
+    -- Note: POST data is directly embedded in curl Parameter using Rainmeter variables
+    Log("Debug", "Triggering MeasureTokenRefresh...")
+    SKIN:Bang('!CommandMeasure', 'MeasureTokenRefresh', 'Run')
+    Log("Debug", "=== RefreshToken() COMPLETE ===")
 end
 
 --[[
 ================================================================================
-CALLBACK FUNCTIONS (Called by WebParser measures)
+CALLBACK FUNCTIONS (Called by TokenRefreshParser.lua)
 ================================================================================
 ]]--
 
 --- Callback when token refresh completes successfully
 -- Parses JSON response and updates @Vault file
--- @param jsonResponse string - JSON response from Spotify token endpoint
-function OnTokenRefreshFinish()
+-- @param expiresIn string - Token expiry time in seconds (passed by TokenRefreshParser.lua)
+function OnTokenRefreshFinish(expiresIn)
     Log("Notice", "Token refresh response received")
 
-    -- Get token values from child WebParser measures
+    -- Get token values from variables (already set by TokenRefreshParser.lua)
     local accessToken = SKIN:GetVariable("SpotifyAccessToken")
     local refreshToken = SKIN:GetVariable("SpotifyRefreshToken")
-    local expiresInStr = SKIN:GetMeasure("MeasureTokenRefreshExpiresIn"):GetStringValue()
 
     -- Validate response
     if not accessToken or accessToken == "" then
@@ -256,26 +272,34 @@ function OnTokenRefreshFinish()
         return
     end
 
-    local expiresIn = tonumber(expiresInStr) or 3600
+    -- expiresIn is now passed as parameter from TokenRefreshParser
+    local expiresIn = tonumber(expiresIn) or 3600
     local currentTime = GetCurrentTime()
     local newExpiry = currentTime + expiresIn
 
     Log("Notice", string.format("New token received (expires in %d seconds)", expiresIn))
 
     -- Update @Vault file with new tokens
-    local success = true
-
-    success = success and UpdateVaultVariable("SpotifyAccessToken", accessToken)
+    local accessTokenSuccess = UpdateVaultVariable("SpotifyAccessToken", accessToken)
+    Log("Debug", string.format("SpotifyAccessToken write result: %s", tostring(accessTokenSuccess)))
 
     -- Refresh token might not be returned if still valid (Spotify behavior)
+    -- Note: Don't fail if refresh token write fails - it's optional
     if refreshToken and refreshToken ~= "" then
-        success = success and UpdateVaultVariable("SpotifyRefreshToken", refreshToken)
-        Log("Debug", "Refresh token updated")
+        Log("Debug", string.format("Attempting to write SpotifyRefreshToken (length: %d)", string.len(refreshToken)))
+        local refreshTokenSuccess = UpdateVaultVariable("SpotifyRefreshToken", refreshToken)
+        Log("Debug", string.format("SpotifyRefreshToken write result: %s", tostring(refreshTokenSuccess)))
     else
         Log("Debug", "Refresh token not returned (using existing)")
     end
 
-    success = success and UpdateVaultVariable("SpotifyTokenExpiry", tostring(newExpiry))
+    -- Always write the new expiry time (this is critical)
+    Log("Debug", string.format("Attempting to write SpotifyTokenExpiry: %s", tostring(newExpiry)))
+    local expirySuccess = UpdateVaultVariable("SpotifyTokenExpiry", tostring(newExpiry))
+    Log("Debug", string.format("SpotifyTokenExpiry write result: %s", tostring(expirySuccess)))
+
+    -- Success if we wrote both access token and expiry (refresh token is optional)
+    local success = accessTokenSuccess and expirySuccess
 
     if success then
         tokenExpiry = newExpiry
