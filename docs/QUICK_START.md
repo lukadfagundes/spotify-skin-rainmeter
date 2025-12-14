@@ -77,7 +77,7 @@
 
 1. Open Spotify (desktop, mobile, or web player)
 2. Play any song
-3. Watch the skin update within 5 seconds!
+3. Watch the skin update within 1-2 seconds!
 
 ### Using Playback Controls
 
@@ -95,7 +95,7 @@
 
 **Solutions**:
 - ✅ Ensure Spotify is streaming from Spotify catalog (not local files)
-- ✅ Wait 5 seconds for update
+- ✅ Wait 1-2 seconds for update
 - ✅ Check internet connection
 - ✅ Disable private session in Spotify
 
@@ -125,7 +125,7 @@
 ### Album art not showing
 
 **Solutions**:
-- ✅ Check `@Resources\Cache\` folder exists
+- ✅ Check `DownloadFile\` folder exists in skin directory
 - ✅ Verify internet connection
 - ✅ Default placeholder shows if download fails
 
@@ -169,11 +169,12 @@ If tokens seem stale:
 3. Click **Custom Actions**
 4. Run: `[!CommandMeasure MeasureTokenManager "ForceRefresh()"]`
 
-### Clear Album Art Cache
+### Album Art Cache
 
-Free up disk space:
+The skin uses a single cached file that automatically overwrites:
 ```
-Delete: Documents\Rainmeter\Skins\SpotifyNowPlaying\@Resources\Cache\*.jpg
+Location: Documents\Rainmeter\Skins\SpotifyNowPlaying\DownloadFile\current-album.jpg
+Size: ~50-200 KB (single file, no cleanup needed)
 ```
 
 ---
@@ -197,7 +198,7 @@ Delete: Documents\Rainmeter\Skins\SpotifyNowPlaying\@Resources\Cache\*.jpg
 - Yes! Displays whatever is playing on ANY device.
 
 **Q: How often does it update?**
-- Every 5 seconds (configurable)
+- Every 1 second (currently not configurable)
 
 **Q: Will I need to re-authorize?**
 - No! Tokens auto-refresh. Only re-authorize if you revoke the app.

@@ -59,7 +59,7 @@ OnDownloadErrorAction=[!SetOption MeterTrackName Text "API Error"][!UpdateMeter 
 
 **User Experience:**
 - Non-intrusive error messages displayed in track name field
-- Skin continues polling every 5 seconds
+- Skin continues polling every 1 second
 - Automatically recovers when Spotify resumes playback
 
 ---
@@ -85,7 +85,7 @@ IfNotMatchAction=[!SetOption MeterAlbumArt ImageName "#@#Images\default-album.pn
 ```
 
 **Caching Behavior:**
-- Successful downloads cached in `@Resources\Cache\`
+- Successful downloads cached in `DownloadFile\` (single file: current-album.jpg)
 - Cache persists across skin reloads
 - Failed downloads fall back to default image immediately
 
@@ -159,7 +159,7 @@ end
 2. **Transient Network Errors:**
    - **Detection:** `OnConnectErrorAction` in WebParser measures
    - **Action:** Log error, wait for next update cycle
-   - **Retry:** Automatic via `UpdateRate` (5s for NowPlaying, 60s for TokenManager)
+   - **Retry:** Automatic via `UpdateRate` (1s for NowPlaying, 60s for TokenManager)
 
 3. **API Rate Limiting:**
    - **Detection:** Spotify returns HTTP 429

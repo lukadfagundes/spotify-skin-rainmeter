@@ -43,6 +43,37 @@ local LOG_INFO = true          -- Info-level logging
 
 --[[
 ================================================================================
+SECURITY FUNCTIONS
+================================================================================
+]]--
+
+--- Validate OAuth token format before using in API calls
+-- Prevents injection of shell metacharacters or malformed tokens
+-- @param token string - Token to validate
+-- @return boolean - true if valid, false otherwise
+function ValidateToken(token)
+    if not token or token == '' then
+        Log("Error", "Token is empty")
+        return false
+    end
+
+    -- Check length (Spotify tokens are typically 100+ characters)
+    if #token < 50 then
+        Log("Warning", string.format("Token suspiciously short (%d chars)", #token))
+        return false
+    end
+
+    -- Check for invalid characters (only allow Base64-like: A-Z, a-z, 0-9, -, _)
+    if token:match('[^A-Za-z0-9_-]') then
+        Log("Error", "Token contains invalid characters - possible injection attempt")
+        return false
+    end
+
+    return true
+end
+
+--[[
+================================================================================
 HELPER FUNCTIONS
 ================================================================================
 ]]--
@@ -232,12 +263,19 @@ function RefreshToken()
     local authVarValue = SKIN:GetVariable('AuthHeaderBase64', '')
     Log("Debug", string.format("AuthHeaderBase64 variable value: %s", authVarValue or "EMPTY"))
 
-    -- Debug: Log the refresh token (first 20 chars only)
+    -- Debug: Log the refresh token (reduced to length only for security)
     local refreshToken = SKIN:GetVariable('SpotifyRefreshToken', '')
     if refreshToken and refreshToken ~= '' then
-        Log("Debug", string.format("Refresh token: %s... (length: %d)", string.sub(refreshToken, 1, 20), string.len(refreshToken)))
+        Log("Debug", string.format("Refresh token present (length: %d)", string.len(refreshToken)))
     else
         Log("Warning", "Refresh token is EMPTY!")
+        isRefreshing = false
+        return
+    end
+
+    -- SECURITY: Validate refresh token format before using in curl command
+    if not ValidateToken(refreshToken) then
+        Log("Error", "Refresh token validation failed - aborting token refresh")
         isRefreshing = false
         return
     end

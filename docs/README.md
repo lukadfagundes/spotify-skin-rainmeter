@@ -130,7 +130,7 @@ Documents\Rainmeter\Skins\
 │       ├── Variables.inc       # Customization variables
 │       ├── Images\             # Button images
 │       ├── Scripts\            # Lua scripts
-│       └── Cache\              # Album art cache
+│       DownloadFile\           # Album art cache
 │
 └── @Vault\
     └── SpotifyCredentials.inc  # OAuth credentials (NEVER COMMIT!)
@@ -140,8 +140,8 @@ Documents\Rainmeter\Skins\
 
 | Component | Default | Adjustable In |
 |-----------|---------|---------------|
-| Currently Playing | 5 seconds | `Variables.inc` → `UpdateRateNowPlaying` |
-| Token Check | 60 seconds | `Variables.inc` → `UpdateRateTokenCheck` |
+| Currently Playing | 1 second | Not configurable (fixed rate) |
+| Token Check | 60 seconds | Not configurable (fixed rate) |
 | UI Redraw | 1 second | `SpotifyNowPlaying.ini` → `[Rainmeter] Update` |
 
 ### OAuth Scopes
@@ -153,7 +153,7 @@ Documents\Rainmeter\Skins\
 
 | Endpoint | Purpose | Frequency |
 |----------|---------|-----------|
-| `/v1/me/player/currently-playing` | Track info | Every 5s |
+| `/v1/me/player/currently-playing` | Track info | Every 1s |
 | `/api/token` | Token refresh | ~Once/hour |
 | `/v1/me/player/play` | Resume playback | On demand |
 | `/v1/me/player/pause` | Pause playback | On demand |

@@ -15,7 +15,7 @@ A beautiful, lightweight Rainmeter skin that displays your currently playing Spo
 - **Playback Controls**: Play/pause, next track, previous track buttons
 - **Progress Bar**: Visual playback progress with time display (MM:SS format)
 - **Automatic Token Refresh**: Set it and forget it - OAuth tokens refresh automatically every ~55 minutes
-- **Low Resource Usage**: Optimized API polling (5-second intervals)
+- **Low Resource Usage**: Real-time updates with 1-second API polling
 - **Error Handling**: Graceful fallbacks for network errors, missing data, and API issues
 - **Customizable**: Easy-to-edit variables for colors, fonts, and layout
 
@@ -23,11 +23,20 @@ A beautiful, lightweight Rainmeter skin that displays your currently playing Spo
 
 ## Screenshots
 
-*(Add screenshots here after testing)*
+![Playing State](screenshots/playing.png)
+*Spotify Now Playing skin displaying current track with album art*
 
-- Screenshot 1: Playing state with album art
-- Screenshot 2: Paused state
-- Screenshot 3: Playback controls highlighted
+![Paused State](screenshots/paused.png)
+*Skin appearance when playback is paused
+
+![Next State](screenshots/next.png)
+*Skin appearance when skipping to next song
+
+![Paused State](screenshots/previous.png)
+*Skin appearance when going back to the previous track
+
+![Spotify.exe](screenshots/spotify-exe.png)
+*Spotify.exe screen
 
 ---
 
@@ -42,6 +51,50 @@ A beautiful, lightweight Rainmeter skin that displays your currently playing Spo
 - **Spotify Account**: Free or Premium (Premium required for playback controls)
 - **Spotify Developer App**: Create at https://developer.spotify.com/dashboard
 - **Active Playback**: Spotify must be playing on any device (desktop, mobile, web)
+
+---
+
+## 🔒 Security & Privacy Notice
+
+**PLEASE READ BEFORE INSTALLING**
+
+### Credential Storage
+This skin stores Spotify OAuth credentials in **plaintext** at:
+```
+C:\Users\{YOU}\Documents\Rainmeter\Skins\@Vault\SpotifyCredentials.inc
+```
+
+### Security Risks
+- ⚠️ **Malware** with user-level access can read these credentials
+- ⚠️ **Backup software** may sync this file to cloud storage
+- ⚠️ **Screen sharing** may expose credentials if folder is open
+
+### Security Best Practices
+✅ **DO**:
+- Keep your system malware-free (use antivirus)
+- Exclude `@Vault` folder from backup/sync software (Dropbox, OneDrive, etc.)
+- Only use on trusted, personal computers
+
+❌ **DON'T**:
+- Share screenshots of the `@Vault` folder
+- Use on shared/public computers
+- Commit `@Vault` folder to git (already in `.gitignore`)
+
+### Scope of Access
+These credentials grant **LIMITED** API access to:
+- ✅ View currently playing track
+- ✅ Control playback (play/pause/skip)
+
+They do **NOT** grant access to:
+- ❌ Change account password or email
+- ❌ Modify billing information
+- ❌ Delete playlists or saved songs
+
+### Privacy Policy
+- **No Telemetry**: This skin does NOT collect or transmit any data to third parties
+- **Data Flow**: Your computer → Spotify API (HTTPS) → Your computer
+- **Local Only**: Album artwork cached locally in `DownloadFile\`
+- **No Analytics**: No usage tracking or statistics collection
 
 ---
 
@@ -163,9 +216,10 @@ Run: [!CommandMeasure MeasureTokenManager "ForceRefresh()"]
 - Look at the debug text at the bottom of the skin (if DebugMode=1)
 - Shows: `Token: Active | Expires: 45 minutes`
 
-**Clear Album Art Cache**:
+**Album Art Cache**:
 ```
-Delete: Documents\Rainmeter\Skins\SpotifyNowPlaying\@Resources\Cache\*.jpg
+Location: Documents\Rainmeter\Skins\SpotifyNowPlaying\DownloadFile\current-album.jpg
+Size: ~50-200 KB (single file, automatically overwrites - no cleanup needed)
 ```
 
 ---
@@ -215,17 +269,11 @@ TrackNameY=20
 
 ### Update Rates
 
-Edit `Variables.inc`:
+**Currently Playing Data:** The skin polls the Spotify API every **1 second** for real-time track updates. This frequency is currently fixed and not user-configurable.
 
-```ini
-; How often to check for currently playing track (seconds)
-UpdateRateNowPlaying=5  ; Default: 5 seconds
+**Token Expiry Check:** The skin checks for token expiration every **60 seconds**.
 
-; How often to check token expiry (seconds)
-UpdateRateTokenCheck=60 ; Default: 60 seconds
-```
-
-**Note**: Lower values = more frequent updates but higher CPU/network usage.
+**Note**: The 1-second polling provides real-time responsiveness but uses more network bandwidth than typical skins. Future versions may add configurable update rates.
 
 ---
 
@@ -299,7 +347,7 @@ UpdateRateTokenCheck=60 ; Default: 60 seconds
 - Cache directory missing
 
 **Solutions:**
-1. Verify `@Resources\Cache\` folder exists
+1. Verify `DownloadFile\` folder exists in skin directory
 2. Check folder permissions (Rainmeter must be able to write)
 3. Default placeholder image will show if download fails
 
@@ -379,8 +427,8 @@ SpotifyNowPlaying/
 │   │   ├── TokenManager.lua    # Token refresh logic
 │   │   └── Base64Encoder.lua   # Base64 encoding for OAuth
 │   │
-│   └── Cache/
-│       └── *.jpg               # Downloaded album art (auto-generated)
+│   └── DownloadFile/
+│       └── current-album.jpg   # Downloaded album art (auto-generated)
 │
 └── @Vault/ (SEPARATE LOCATION)
     └── SpotifyCredentials.inc  # OAuth credentials (NEVER commit!)
@@ -418,7 +466,7 @@ This skin requests the following OAuth scopes:
 ### Network Activity
 
 - Connects to `https://api.spotify.com` only
-- Polls currently playing endpoint every 5 seconds (when loaded)
+- Polls currently playing endpoint every 1 second (when loaded)
 - Refreshes OAuth token every ~55 minutes
 - All connections use HTTPS (encrypted)
 
@@ -440,24 +488,25 @@ To revoke access at any time:
 |--------|-------|-------|
 | RAM | ~5-10 MB | Includes Rainmeter overhead |
 | CPU | <1% average | Spikes briefly during updates |
-| Network | ~2 KB/5sec | API polling (currently playing) |
-| Disk | <1 MB | Album art cache (grows with unique tracks) |
+| Network | ~400-500 bytes/sec | API polling (1-second intervals) |
+| Disk | ~50-200 KB | Album art cache (single file, auto-overwrites) |
 
 ### Optimization Tips
 
-1. **Increase update interval** (reduces network usage):
-   ```ini
-   UpdateRateNowPlaying=10  ; Check every 10 seconds instead of 5
-   ```
+1. **Reduce API polling frequency** (advanced - requires code modification):
+   - Not user-configurable via Variables.inc
+   - Requires editing `SpotifyNowPlaying.ini` line 122
+   - Change `UpdateDivider=1` to `UpdateDivider=5` for 5-second polling
+   - Trade-off: Less responsive but lower network usage
 
 2. **Disable debug mode** (production):
    ```ini
    DebugMode=0
    ```
 
-3. **Clear album art cache** periodically:
+3. **Album art cache** (no action needed):
    ```
-   Delete: @Resources\Cache\*.jpg
+   Single file auto-overwrites - no cleanup required
    ```
 
 4. **Unload skin when not in use**:
@@ -651,7 +700,7 @@ MIT License - See [LICENSE](LICENSE) file for details.
 Future enhancements being considered:
 
 - [ ] **Unicode/UTF-8 Support** - Full international character display (requires Rainmeter codebase updates)
-- [ ] Volume control slider
+- [ ] ~~Volume control slider~~ - Attempted but removed due to curl conflicts with frequent API polling (data reliability prioritized)
 - [ ] Playlist management (add to playlist)
 - [ ] Like/unlike current track
 - [ ] Multiple skin variants (compact, large, mini)

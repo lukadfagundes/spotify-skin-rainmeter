@@ -5,26 +5,7 @@ All notable changes to the Spotify Now Playing Rainmeter Skin will be documented
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Upcoming Features (Pending Rainmeter Codebase Advances)
-- **Unicode/UTF-8 Character Support** - Full international character display for track, artist, and album names
-  - Currently limited by Rainmeter's Lua implementation using ANSI/Windows-1252 encoding
-  - International characters (Japanese, Korean, Cyrillic, etc.) display as `?` characters
-  - Requires Rainmeter core updates to support UTF-8 in Lua variables
-  - See [Known Limitations](#known-limitations) below for current behavior
-
-### Planned Features
-- Volume control slider
-- Playlist management (add to playlist button)
-- Like/unlock current track
-- Multiple skin variants (compact, large, mini)
-- Visualizer integration
-- Shuffle/repeat toggle buttons
-- Device selection dropdown
-- Lyrics display integration
-
-## [1.0.0] - 2025-01-XX
+## [1.0.0] - 2025-12-14
 
 ### Added
 - Initial release of Spotify Now Playing skin
@@ -72,6 +53,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - .gitignore configured to prevent token leakage
   - OAuth scope minimization (only required permissions)
 
+### Security Enhancements
+- Input sanitization for all API response data
+  - Prevents Rainmeter bang injection attacks
+  - Sanitizes track names, artist names, album names
+  - Replaces `[`, `]`, and `!` characters that could execute commands
+- OAuth token validation before API calls
+  - Format validation (Base64-like characters only)
+  - Length checks (minimum 50 characters)
+  - Invalid character detection prevents injection attacks
+- HTTPS certificate verification enforced
+  - Added `--ssl-reqd --fail` flags to all curl commands
+  - Prevents man-in-the-middle attacks
+  - Fails immediately on certificate errors
+- Reduced debug logging of sensitive data
+  - Token prefixes no longer logged
+  - Only non-sensitive metrics (token length) logged
+  - Safer for users to share logs when debugging
+- File permissions hardening
+  - Credentials file set to user-only read/write
+  - Prevents access from other users on multi-user systems
+  - Applied via SpotifySetup.exe during credential creation
+- Comprehensive security documentation
+  - [Security Audit Report](docs/SECURITY-AUDIT.md) - 18,000-word comprehensive analysis
+  - [Security Improvements Summary](docs/SECURITY-IMPROVEMENTS.md) - Implementation details
+  - Security warnings prominently displayed in README.md
+  - Privacy policy statement (no telemetry, local-only data)
+
 ### Technical Details
 - Rainmeter 4.5+ compatibility
 - Spotify Web API integration
@@ -90,7 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Base64Encoder.lua for OAuth headers
 - WebParser measures for API communication
 - Optimized performance
-  - 5-second API polling interval
+  - 1-second API polling interval for real-time updates
   - Album art caching to disk
   - Conditional UI updates
   - <1% CPU usage average
@@ -107,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only works with Spotify catalog streaming (not local files)
 - Requires active internet connection
 - No offline mode support
-- Album art cache grows unbounded (manual cleanup required)
+- Album art stored as single cached file (automatically overwritten on track change)
 
 ### Security
 - OAuth tokens stored in @Vault (excluded from skin distribution)
@@ -122,7 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
-### [1.0.0] - 2025-01-XX
+### [1.0.0] - 2025-12-14
 - Initial public release
 
 ---

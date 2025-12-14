@@ -321,28 +321,59 @@ class SpotifySetupApp:
         self.log("✓ Browser opened for authorization")
         self.log("   Waiting for user to authorize...")
 
-        # Step 4: Wait for callback
-        authorization_code = None
-        timeout = 120  # 2 minutes timeout
-        start_time = time.time()
+        # Step 4: Wait for callback using non-blocking Tkinter after() method
+        self.oauth_start_time = time.time()
+        self.oauth_timeout = 120  # 2 minutes
+        self.client_id = client_id
+        self.client_secret = client_secret
 
-        while authorization_code is None and time.time() - start_time < timeout:
-            time.sleep(0.5)
-            self.root.update()
+        # Schedule first check
+        self.root.after(500, self.check_authorization_callback)
 
-        # Shutdown server
-        if httpd:
-            httpd.shutdown()
+    def check_authorization_callback(self):
+        """Non-blocking check for authorization callback (called via Tkinter's after())"""
+        global authorization_code, httpd
 
-        if authorization_code is None:
+        # Check if we received the code
+        if authorization_code is not None:
+            # Shutdown server
+            if httpd:
+                httpd.shutdown()
+
+            self.log("✓ Authorization code received")
+
+            # Exchange code for tokens
+            self.exchange_code_for_tokens(authorization_code, self.client_id, self.client_secret)
+            return
+
+        # Check timeout
+        elapsed = time.time() - self.oauth_start_time
+        if elapsed >= self.oauth_timeout:
+            # Shutdown server
+            if httpd:
+                httpd.shutdown()
+
             messagebox.showerror("Timeout", "Authorization timed out. Please try again.")
             self.log("✗ Authorization timed out (2 minutes)")
             return
 
-        self.log("✓ Authorization code received")
+        # Not ready yet - check again in 500ms
+        self.root.after(500, self.check_authorization_callback)
 
-        # Step 5: Exchange authorization code for tokens
+    def exchange_code_for_tokens(self, auth_code, client_id, client_secret):
+        """Exchange authorization code for access and refresh tokens (runs in background thread)"""
         self.log("   Exchanging code for tokens...")
+
+        # Run token exchange in background thread to prevent UI freeze
+        exchange_thread = threading.Thread(
+            target=self._do_token_exchange,
+            args=(auth_code, client_id, client_secret),
+            daemon=True
+        )
+        exchange_thread.start()
+
+    def _do_token_exchange(self, auth_code, client_id, client_secret):
+        """Background thread worker for token exchange"""
         try:
             # Encode Client ID:Secret in Base64 for Basic auth
             credentials = f"{client_id}:{client_secret}"
@@ -350,7 +381,7 @@ class SpotifySetupApp:
 
             token_data = {
                 'grant_type': 'authorization_code',
-                'code': authorization_code,
+                'code': auth_code,
                 'redirect_uri': REDIRECT_URI
             }
 
@@ -359,7 +390,7 @@ class SpotifySetupApp:
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
 
-            response = requests.post(SPOTIFY_TOKEN_URL, data=token_data, headers=token_headers)
+            response = requests.post(SPOTIFY_TOKEN_URL, data=token_data, headers=token_headers, timeout=10)
 
             if response.status_code == 200:
                 tokens = response.json()
@@ -368,21 +399,24 @@ class SpotifySetupApp:
                 expires_in = tokens.get('expires_in', 3600)
                 expiry_time = int(time.time()) + expires_in
 
-                self.log("✓ Tokens obtained successfully")
-                self.log(f"   Access token expires in: {expires_in} seconds ({expires_in // 60} minutes)")
+                # Schedule UI updates on main thread
+                self.root.after(0, lambda: self.log("✓ Tokens obtained successfully"))
+                self.root.after(0, lambda: self.log(f"   Access token expires in: {expires_in} seconds ({expires_in // 60} minutes)"))
 
-                # Step 6: Write to @Vault
-                self.write_credentials(client_id, client_secret, access_token, refresh_token, expiry_time)
+                # Write to @Vault (on main thread to avoid race conditions)
+                self.root.after(0, lambda: self.write_credentials(client_id, client_secret, access_token, refresh_token, expiry_time))
 
             else:
                 error_data = response.json()
                 error_msg = error_data.get('error_description', response.text)
-                messagebox.showerror("Token Exchange Failed", f"Error: {error_msg}")
-                self.log(f"✗ Token exchange failed: {error_msg}")
+                # Schedule UI updates on main thread
+                self.root.after(0, lambda: messagebox.showerror("Token Exchange Failed", f"Error: {error_msg}"))
+                self.root.after(0, lambda: self.log(f"✗ Token exchange failed: {error_msg}"))
 
         except requests.exceptions.RequestException as e:
-            messagebox.showerror("Network Error", f"Failed to connect to Spotify API:\n{str(e)}")
-            self.log(f"✗ Network error: {str(e)}")
+            # Schedule UI updates on main thread
+            self.root.after(0, lambda: messagebox.showerror("Network Error", f"Failed to connect to Spotify API:\n{str(e)}"))
+            self.root.after(0, lambda: self.log(f"✗ Network error: {str(e)}"))
 
     def write_credentials(self, client_id, client_secret, access_token, refresh_token, expiry_time):
         """Write credentials to @Vault\SpotifyCredentials.inc"""
@@ -441,6 +475,16 @@ SpotifyTokenExpiry={expiry_time}
         try:
             with open(creds_file, 'w', encoding='utf-8') as f:
                 f.write(config_content)
+
+            # SECURITY: Set file permissions to user-only (read/write)
+            # This prevents other users on the system from reading credentials
+            try:
+                import stat
+                os.chmod(creds_file, stat.S_IRUSR | stat.S_IWUSR)
+                self.log(f"✓ File permissions set to user-only (read/write)")
+            except Exception as perm_error:
+                # Non-critical: Log warning but continue
+                self.log(f"⚠ Could not set file permissions: {perm_error}")
 
             self.log(f"✓ Credentials written to: {creds_file}")
             self.log("\n" + "="*60)

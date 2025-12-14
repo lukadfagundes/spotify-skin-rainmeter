@@ -25,11 +25,11 @@ All files in `SpotifyNowPlaying/` directory:
 - [x] `@Resources/Images/` - Button images (PNG or SVG)
 - [x] `@Resources/Scripts/TokenManager.lua`
 - [x] `@Resources/Scripts/Base64Encoder.lua`
-- [x] `@Resources/Cache/.gitkeep` - Placeholder (cache directory)
+- [x] `DownloadFile/` folder will be created automatically by Rainmeter
 
 ### Excluded from Package
 - [x] `@Vault/` folder (contains user credentials - **NEVER INCLUDE**)
-- [x] `@Resources/Cache/*.jpg` (downloaded album art - user-specific)
+- [x] `DownloadFile/*.jpg` (downloaded album art - user-specific, created at runtime)
 - [x] Python build artifacts (`__pycache__/`, `build/`, `dist/`)
 - [x] `.git/` directory
 - [x] IDE config files (`.vscode/`, `.idea/`)
@@ -179,8 +179,8 @@ spotify-skin-rainmeter/            # Project root
     │   ├── TokenManager.lua
     │   └── Base64Encoder.lua
     │
-    └── Cache/
-        └── .gitkeep
+    └── DownloadFile/
+        └── current-album.jpg
 ```
 
 **Verification Commands**:
@@ -255,7 +255,6 @@ SpotifyNowPlaying/@Resources/Images/previous.png
 SpotifyNowPlaying/@Resources/Images/default-album.png
 SpotifyNowPlaying/@Resources/Scripts/TokenManager.lua
 SpotifyNowPlaying/@Resources/Scripts/Base64Encoder.lua
-SpotifyNowPlaying/@Resources/Cache/.gitkeep
 ```
 
 **CRITICAL: Verify @Vault is NOT included**:
