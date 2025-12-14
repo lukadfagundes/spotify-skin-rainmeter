@@ -23,19 +23,19 @@ A beautiful, lightweight Rainmeter skin that displays your currently playing Spo
 
 ## Screenshots
 
-![Playing State](screenshots/playing.png)
+![Playing State](docs/screenshots/playing.png)
 *Spotify Now Playing skin displaying current track with album art*
 
-![Paused State](screenshots/paused.png)
+![Paused State](docs/screenshots/paused.png)
 *Skin appearance when playback is paused
 
-![Next State](screenshots/next.png)
+![Next State](docs/screenshots/next.png)
 *Skin appearance when skipping to next song
 
-![Paused State](screenshots/previous.png)
+![Paused State](docs/screenshots/previous.png)
 *Skin appearance when going back to the previous track
 
-![Spotify.exe](screenshots/spotify-exe.png)
+![Spotify.exe](docs/screenshots/spotify-exe.png)
 *Spotify.exe screen
 
 ---
@@ -703,7 +703,7 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 If you find this skin useful and want to support its development, consider buying me a coffee!
 
-**Venmo**: [@strawhatluka](https://venmo.com/strawhatluka)
+**Venmo**: [@strawhatluka](https://venmo.com/u/strawhatluka)
 **Cash App**: [$strawhatluka](https://cash.app/$strawhatluka)
 
 Your support helps keep this project maintained and updated. Thank you! ☕
