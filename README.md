@@ -695,20 +695,6 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ---
 
-## Roadmap
-
-Future enhancements being considered:
-
-- [ ] **Unicode/UTF-8 Support** - Full international character display (requires Rainmeter codebase updates)
-- [ ] ~~Volume control slider~~ - Attempted but removed due to curl conflicts with frequent API polling (data reliability prioritized)
-- [ ] Playlist management (add to playlist)
-- [ ] Like/unlike current track
-- [ ] Multiple skin variants (compact, large, mini)
-- [ ] Visualizer integration
-- [ ] Shuffle/repeat toggle
-- [ ] Device selection dropdown
-- [ ] Lyrics display (via third-party API)
-
 **Suggestions?** Open a feature request!
 
 ---
@@ -717,8 +703,8 @@ Future enhancements being considered:
 
 If you find this skin useful and want to support its development, consider buying me a coffee!
 
-**Venmo**: @strawhatluka
-**Cash App**: $strawhatluka
+**Venmo**: [@strawhatluka](https://venmo.com/strawhatluka)
+**Cash App**: [$strawhatluka](https://cash.app/$strawhatluka)
 
 Your support helps keep this project maintained and updated. Thank you! ☕
 
