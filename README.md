@@ -713,6 +713,17 @@ Future enhancements being considered:
 
 ---
 
+## Support the Project
+
+If you find this skin useful and want to support its development, consider buying me a coffee!
+
+**Venmo**: @strawhatluka
+**Cash App**: $strawhatluka
+
+Your support helps keep this project maintained and updated. Thank you! ☕
+
+---
+
 **Made with ❤️ for the Rainmeter community**
 
 *Star this repo if you find it useful!*
