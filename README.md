@@ -717,4 +717,4 @@ Your support helps keep this project maintained and updated. Thank you! ☕
 
 **Made with ❤️ for the Rainmeter community**
 
-*Star this repo if you find it useful!*
+*Star this repo if you find it useful!, thank you!*
